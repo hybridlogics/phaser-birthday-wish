@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>Baskit ball</title>
+    <script src="phaser.js" type="text/javascript"></script>
+</head>
+
+<body>
+    <div style="align:center">
+        <script type="text/javascript">
+            // mods by Patrick OReilly 
+            // Twitter: @pato_reilly Web: http://patricko.byethost9.com
+            var height = window.innerHeight;
+            var width = window.innerWidth;
+            console.log(width + "x " + height);
+            var game = new Phaser.Game(871, 580, Phaser.CANVAS, 'phaser-example', {
+                preload: preload,
+                create: create,
+                update: update
+            });
+
+            function preload() {
+                game.load.image('background', 'Assets/background.png'); //backgroud
+                game.load.image('cake', 'Assets/cake.png'); // cake
+                game.load.image('cakebig', 'Assets/cakebig.png'); // big cake after reaching at small cake
+                game.load.spritesheet('mummy', 'Assets/walk.png', 64, 104); // walking sprite
+                game.load.audio('saybirthday', 'Assets/hbd.mp3'); // happy birthday audio
+            }
+            var background, saybirthday;
+            var cursors;
+            var mummy;
+            var cake, cakebig;
+
+            function create() {
+
+                game.physics.startSystem(Phaser.Physics.ARCADE);
+
+                //  This creates a simple sprite that is using our loaded image and displays it on-screen and assign it to a variable
+                background = game.add.sprite(0, 0, 'background');
+                mummy = game.add.sprite(10, 405, 'mummy');
+                cake = game.add.sprite(750, 440, 'cake');
+                mummy.animations.add('walk');
+                game.physics.enable(mummy, Phaser.Physics.ARCADE);
+                game.physics.enable(cake, Phaser.Physics.ARCADE);
+                saybirthday = game.add.audio('saybirthday');
+
+                cursors = game.input.keyboard.createCursorKeys();
+                cake.body.immovable = true;
+            }
+
+            function update() {
+                if (cursors.right.isDown) {
+                    mummy.animations.play('walk', 20, true);
+                    mummy.body.velocity.x = 150;
+                } else if (cursors.left.isDown) {
+                    mummy.animations.play('walk', 20, false);
+                    mummy.body.velocity.x = -150;
+                } else {
+                    mummy.body.velocity.x = 0;
+                }
+                game.physics.arcade.collide(mummy, cake, collisionHandler, null, this);
+            }
+
+            function collisionHandler() {
+                mummy.kill();
+                var text = "Happy Birth Day ";
+                var style = {
+                    font: "65px Arial",
+                    fill: "black",
+                    align: "center"
+                };
+
+                var t = game.add.text(game.world.centerX - 300, 100, text, style);
+                cake.kill();
+                cakebig = game.add.sprite(game.world.centerX - 200, 150, 'cakebig');
+                //                    cake.scale.setTo(4, 4);
+                saybirthday.play();
+
+            }
+        </script>
+    </div>
+
+</body>
